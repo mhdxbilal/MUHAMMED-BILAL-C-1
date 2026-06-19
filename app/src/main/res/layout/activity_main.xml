@@ -57,7 +57,7 @@
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:src="@drawable/ic_folder"
-            android:tint="@color/continental_text_secondary"
+            app:tint="@color/continental_text_secondary"
             android:contentDescription="@null" />
 
         <TextView

@@ -21,6 +21,7 @@ import androidx.media3.exoplayer.mediacodec.MediaCodecUtil
  * Buffers: bumped above ExoPlayer's stock defaults (15s/30s/2.5s/5s) on the max side, since
  * a remuxed 4K60 file can be 80-100+ Mbps and benefits from a deeper buffer on slower storage.
  */
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 object PlayerEngine {
 
     fun createPlayer(context: Context): ExoPlayer {

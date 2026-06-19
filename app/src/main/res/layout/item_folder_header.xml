@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
@@ -19,7 +20,7 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:src="@drawable/ic_folder"
-        android:tint="@color/continental_gold"
+        app:tint="@color/continental_gold"
         android:contentDescription="@null" />
 
     <LinearLayout
@@ -52,7 +53,7 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:src="@drawable/ic_chevron_down"
-        android:tint="@color/continental_text_secondary"
+        app:tint="@color/continental_text_secondary"
         android:contentDescription="@null" />
 
 </LinearLayout>

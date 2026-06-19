@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -21,7 +22,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_circle"
-            android:tint="@color/continental_gold"
+            app:tint="@color/continental_gold"
             android:contentDescription="@null" />
 
         <TextView
@@ -44,7 +45,7 @@
             android:layout_height="36dp"
             android:padding="6dp"
             android:src="@drawable/ic_close"
-            android:tint="@color/continental_text_secondary"
+            app:tint="@color/continental_text_secondary"
             android:contentDescription="@string/action_cancel" />
 
         <ImageButton
@@ -54,7 +55,7 @@
             android:layout_height="36dp"
             android:padding="6dp"
             android:src="@drawable/ic_play"
-            android:tint="@color/continental_gold"
+            app:tint="@color/continental_gold"
             android:visibility="gone"
             android:contentDescription="@string/action_play" />
 
@@ -65,7 +66,7 @@
             android:layout_height="36dp"
             android:padding="6dp"
             android:src="@drawable/ic_close"
-            android:tint="@color/continental_text_secondary"
+            app:tint="@color/continental_text_secondary"
             android:visibility="gone"
             android:contentDescription="@string/action_remove" />
     </LinearLayout>

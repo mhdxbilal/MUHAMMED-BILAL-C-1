@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<full-backup-content>
-    <!-- Resume positions / preferences only — never back up cached thumbnails -->
-    <include domain="sharedpref" path="." />
-</full-backup-content>

@@ -32,6 +32,7 @@ import com.continental.player.player.PlayerGestureHelper
 import com.continental.player.player.TrackSelectionHelper
 import com.continental.player.util.FormatUtils
 
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
 
     private lateinit var binding: ActivityPlayerBinding

@@ -37,6 +37,7 @@ object MediaStoreFileUtils {
         }
     }
 
+    @androidx.annotation.RequiresApi(android.os.Build.VERSION_CODES.Q)
     private fun publishModern(
         context: Context,
         sourceFile: File,
