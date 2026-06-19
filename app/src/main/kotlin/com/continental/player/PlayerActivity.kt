@@ -55,6 +55,14 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
             binding.tvGestureIndicator.isVisible = false
             binding.tvGestureIndicator.alpha = 1f
         }.start()
+        binding.pbVolume.animate().alpha(0f).setDuration(250).withEndAction {
+            binding.pbVolume.isVisible = false
+            binding.pbVolume.alpha = 1f
+        }.start()
+        binding.pbBrightness.animate().alpha(0f).setDuration(250).withEndAction {
+            binding.pbBrightness.isVisible = false
+            binding.pbBrightness.alpha = 1f
+        }.start()
     }
     private val progressUpdateRunnable = object : Runnable {
         override fun run() {
@@ -73,6 +81,131 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
                 uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
             )
             loadExternalSubtitle(uri)
+        }
+    }
+
+    private val addFilesLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.OpenMultipleDocuments()
+    ) { uris ->
+        if (uris.isNotEmpty()) {
+            for (uri in uris) {
+                contentResolver.takePersistableUriPermission(
+                    uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+                queue.add(uri.toString())
+            }
+            if (queue.size == uris.size) {
+                // Was empty, so start playing the first one
+                queueIndex = 0
+                loadCurrentQueueItem()
+            }
+            binding.rvPlaylist.adapter?.notifyDataSetChanged()
+        }
+    }
+
+    private fun setupEqualizerOverlay() {
+        binding.btnCloseEqualizer.setOnClickListener {
+            binding.equalizerContainer.isVisible = false
+        }
+    }
+    
+    private fun showEqualizer() {
+        val eq = audioEffects.getEqualizer() ?: return
+        val bands = eq.numberOfBands
+        val minEQLevel = eq.bandLevelRange[0]
+        val maxEQLevel = eq.bandLevelRange[1]
+        
+        binding.equalizerBands.removeAllViews()
+        for (i in 0 until bands) {
+            val bandIndex = i.toShort()
+            val freq = eq.getCenterFreq(bandIndex) / 1000 // mHz to Hz
+            
+            val layout = android.widget.LinearLayout(this).apply {
+                orientation = android.widget.LinearLayout.VERTICAL
+                gravity = android.view.Gravity.CENTER_HORIZONTAL
+                layoutParams = android.widget.LinearLayout.LayoutParams(
+                    0, android.view.ViewGroup.LayoutParams.WRAP_CONTENT, 1f
+                )
+            }
+            
+            val seekBar = android.widget.SeekBar(this).apply {
+                layoutParams = android.widget.LinearLayout.LayoutParams(
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT, 300
+                )
+                max = maxEQLevel - minEQLevel
+                progress = eq.getBandLevel(bandIndex) - minEQLevel
+                
+                setOnSeekBarChangeListener(object : android.widget.SeekBar.OnSeekBarChangeListener {
+                    override fun onProgressChanged(seekBar: android.widget.SeekBar, progress: Int, fromUser: Boolean) {
+                        if (fromUser) {
+                            eq.setBandLevel(bandIndex, (progress + minEQLevel).toShort())
+                        }
+                    }
+                    override fun onStartTrackingTouch(seekBar: android.widget.SeekBar) {}
+                    override fun onStopTrackingTouch(seekBar: android.widget.SeekBar) {}
+                })
+            }
+            // Vertical seekbar hack since native one doesn't exist
+            seekBar.rotation = 270f
+            
+            val freqText = android.widget.TextView(this).apply {
+                text = "${freq}Hz"
+                setTextColor(android.graphics.Color.WHITE)
+                textSize = 12f
+                gravity = android.view.Gravity.CENTER
+                setPadding(0, 16, 0, 0)
+            }
+            
+            val dummyContainer = android.widget.FrameLayout(this).apply {
+                layoutParams = android.widget.LinearLayout.LayoutParams(
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT, 300
+                )
+                addView(seekBar)
+            }
+            
+            layout.addView(dummyContainer)
+            layout.addView(freqText)
+            binding.equalizerBands.addView(layout)
+        }
+        
+        binding.equalizerContainer.isVisible = true
+    }
+    
+    private fun setupPlaylistDrawer() {
+        binding.rvPlaylist.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        binding.rvPlaylist.adapter = object : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
+            override fun onCreateViewHolder(parent: android.view.ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
+                val tv = android.widget.TextView(parent.context).apply {
+                    setPadding(32, 32, 32, 32)
+                    setTextColor(android.graphics.Color.WHITE)
+                    textSize = 16f
+                    layoutParams = android.view.ViewGroup.LayoutParams(
+                        android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                        android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+                }
+                return object : androidx.recyclerview.widget.RecyclerView.ViewHolder(tv) {}
+            }
+
+            override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
+                val tv = holder.itemView as android.widget.TextView
+                val uriString = queue[position]
+                val name = android.net.Uri.parse(uriString).lastPathSegment ?: "Unknown Video"
+                tv.text = if (position == queueIndex) "▶ $name" else name
+                tv.setTextColor(if (position == queueIndex) getColor(R.color.continental_gold) else android.graphics.Color.WHITE)
+                
+                tv.setOnClickListener {
+                    queueIndex = position
+                    loadCurrentQueueItem()
+                    binding.drawerLayout.closeDrawer(androidx.core.view.GravityCompat.END)
+                }
+            }
+
+            override fun getItemCount() = queue.size
+        }
+
+        binding.btnAddFiles.setOnClickListener {
+            addFilesLauncher.launch(arrayOf("video/*"))
         }
     }
 
@@ -119,6 +252,8 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
         setupSeekBar()
         wireControlButtons()
         setupGestureOverlay()
+        setupPlaylistDrawer()
+        setupEqualizerOverlay()
 
         // Handle "Open with The Continental" from a file manager
         val viewUri = intent?.data
@@ -214,6 +349,7 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
                     player.playbackParameters = PlaybackParameters(settings.lastPlaybackSpeed)
                     syncSpeedButton()
                 }
+                binding.rvPlaylist.adapter?.notifyDataSetChanged()
             }
 
             override fun onPlayerError(error: PlaybackException) {
@@ -328,6 +464,10 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
         pv.findViewById<View>(R.id.btnMore)?.setOnClickListener { anchor ->
             showMoreOptionsMenu(anchor)
         }
+        
+        pv.findViewById<View>(R.id.btnPlaylist)?.setOnClickListener {
+            binding.drawerLayout.openDrawer(androidx.core.view.GravityCompat.END)
+        }
 
         // Speed text button in bottom bar
         pv.findViewById<View>(R.id.btnSpeed)?.setOnClickListener {
@@ -376,6 +516,7 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
                 R.id.action_resize_mode -> { cycleResizeMode(); true }
                 R.id.action_orientation -> { showOrientationDialog(); true }
                 R.id.action_audio_effects -> { showAudioEffectsDialog(); true }
+                R.id.action_equalizer -> { showEqualizer(); true }
                 R.id.action_pip -> { enterPip(); true }
                 else -> false
             }
@@ -742,11 +883,19 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
     }
 
     override fun onVolumeIndicator(percent: Int) {
-        showGestureIndicator("🔊 $percent%")
+        binding.pbVolume.progress = percent
+        binding.pbVolume.alpha = 1f
+        binding.pbVolume.isVisible = true
+        gestureIndicatorHandler.removeCallbacks(gestureIndicatorHide)
+        gestureIndicatorHandler.postDelayed(gestureIndicatorHide, 1200)
     }
 
     override fun onBrightnessIndicator(percent: Int) {
-        showGestureIndicator("☀️ $percent%")
+        binding.pbBrightness.progress = percent
+        binding.pbBrightness.alpha = 1f
+        binding.pbBrightness.isVisible = true
+        gestureIndicatorHandler.removeCallbacks(gestureIndicatorHide)
+        gestureIndicatorHandler.postDelayed(gestureIndicatorHide, 1200)
     }
 
     private fun showGestureIndicator(text: String) {
@@ -760,6 +909,8 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
     private fun hideGestureIndicatorNow() {
         gestureIndicatorHandler.removeCallbacks(gestureIndicatorHide)
         binding.tvGestureIndicator.isVisible = false
+        binding.pbVolume.isVisible = false
+        binding.pbBrightness.isVisible = false
     }
 
     // ─────────────────────────────────────────────
