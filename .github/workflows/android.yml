@@ -53,6 +53,15 @@ jobs:
              ./gradlew dependencies --configuration debugRuntimeClasspath --no-daemon
         continue-on-error: true    # soft failure — the assemble step below will give the real error
 
+      # ── 5.5. Prepare Keystore ────────────────────────────────────────
+      - name: Decode Keystore
+        run: |
+          if [ -f "debug.keystore.base64" ]; then
+            base64 -d debug.keystore.base64 > debug.keystore
+          else
+            echo "::warning::debug.keystore.base64 not found, assemble will probably fail"
+          fi
+
       # ── 6. Assemble debug APK ────────────────────────────────────────
       - name: Assemble debug APK
         run: ./gradlew clean assembleDebug --stacktrace --no-daemon
