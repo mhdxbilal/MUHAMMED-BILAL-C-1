@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- ===================== TOP BAR ===================== -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:background="@drawable/scrim_top"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="@dimen/spacing_s"
+        android:paddingBottom="@dimen/spacing_l"
+        android:paddingStart="@dimen/spacing_s"
+        android:paddingEnd="@dimen/spacing_s">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            style="@style/Continental.PlayerButton"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@drawable/ic_back"
+            android:contentDescription="@string/content_desc_back" />
+
+        <TextView
+            android:id="@+id/tvVideoTitle"
+            style="@style/Continental.Text.Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/spacing_s"
+            android:textSize="16sp"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <ImageButton
+            android:id="@+id/btnLock"
+            style="@style/Continental.PlayerButton"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@drawable/ic_lock_open"
+            android:contentDescription="@string/action_lock" />
+
+        <ImageButton
+            android:id="@+id/btnMore"
+            style="@style/Continental.PlayerButton"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@drawable/ic_more_vert"
+            android:contentDescription="@string/content_desc_more" />
+    </LinearLayout>
+
+    <!-- ===================== BUFFERING SPINNER ===================== -->
+    <ProgressBar
+        android:id="@+id/exo_buffering"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/continental_gold" />
+
+    <!-- ===================== CENTER TRANSPORT ===================== -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/exo_prev"
+            style="@style/Continental.PlayerButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_rewind_10"
+            android:contentDescription="@string/action_skip_next" />
+
+        <ImageButton
+            android:id="@+id/exo_rew"
+            style="@style/Continental.PlayerButton"
+            android:layout_width="@dimen/player_control_icon_large"
+            android:layout_height="@dimen/player_control_icon_large"
+            android:layout_marginStart="@dimen/spacing_m"
+            android:src="@drawable/ic_rewind_10"
+            android:contentDescription="@string/content_desc_rewind" />
+
+        <FrameLayout
+            android:layout_width="76dp"
+            android:layout_height="76dp"
+            android:layout_marginStart="@dimen/spacing_m"
+            android:layout_marginEnd="@dimen/spacing_m">
+
+            <ImageButton
+                android:id="@+id/exo_play"
+                style="@style/Continental.PlayerButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_play"
+                android:contentDescription="@string/content_desc_play" />
+
+            <ImageButton
+                android:id="@+id/exo_pause"
+                style="@style/Continental.PlayerButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_pause"
+                android:contentDescription="@string/content_desc_pause" />
+        </FrameLayout>
+
+        <ImageButton
+            android:id="@+id/exo_ffwd"
+            style="@style/Continental.PlayerButton"
+            android:layout_width="@dimen/player_control_icon_large"
+            android:layout_height="@dimen/player_control_icon_large"
+            android:src="@drawable/ic_forward_10"
+            android:contentDescription="@string/content_desc_forward" />
+
+        <ImageButton
+            android:id="@+id/exo_next"
+            style="@style/Continental.PlayerButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="@dimen/spacing_m"
+            android:src="@drawable/ic_forward_10"
+            android:contentDescription="@string/action_skip_next" />
+    </LinearLayout>
+
+    <!-- ===================== BOTTOM BAR ===================== -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@drawable/scrim_bottom"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="@dimen/spacing_l"
+        android:paddingBottom="@dimen/spacing_s"
+        android:paddingStart="@dimen/spacing_m"
+        android:paddingEnd="@dimen/spacing_m">
+
+        <TextView
+            android:id="@+id/exo_position"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/continental_text_primary"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-condensed" />
+
+        <androidx.media3.ui.DefaultTimeBar
+            android:id="@+id/exo_progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/spacing_s"
+            android:layout_marginEnd="@dimen/spacing_s"
+            app:played_color="@color/continental_gold"
+            app:scrubber_color="@color/continental_gold"
+            app:buffered_color="#80D4AF37"
+            app:unplayed_color="#33FFFFFF" />
+
+        <TextView
+            android:id="@+id/exo_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/continental_text_secondary"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-condensed" />
+
+        <TextView
+            android:id="@+id/btnSpeed"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_marginStart="@dimen/spacing_s"
+            android:minWidth="44dp"
+            android:gravity="center"
+            android:background="@drawable/ripple_circle"
+            android:textColor="@color/continental_gold"
+            android:textSize="13sp"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:text="1.0x"
+            android:contentDescription="@string/action_playback_speed" />
+    </LinearLayout>
+
+</FrameLayout>

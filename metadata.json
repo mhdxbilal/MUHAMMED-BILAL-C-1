@@ -1,0 +1,6 @@
+{
+  "name": "The Continental",
+  "description": "A native Kotlin media player with zero-lag, hardware-accelerated 4K playback.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

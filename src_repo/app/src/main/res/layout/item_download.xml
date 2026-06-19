@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_card"
+    android:layout_marginStart="@dimen/spacing_m"
+    android:layout_marginEnd="@dimen/spacing_m"
+    android:layout_marginTop="@dimen/spacing_s"
+    android:padding="@dimen/spacing_m">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/ivStatusIcon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_circle"
+            android:tint="@color/continental_gold"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            style="@style/Continental.Text.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/spacing_s"
+            android:textColor="@color/continental_text_primary"
+            android:textSize="14sp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            tools:text="Some Video Title From The Internet" />
+
+        <ImageButton
+            android:id="@+id/btnCancel"
+            style="@style/Continental.PlayerButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:padding="6dp"
+            android:src="@drawable/ic_close"
+            android:tint="@color/continental_text_secondary"
+            android:contentDescription="@string/action_cancel" />
+
+        <ImageButton
+            android:id="@+id/btnPlay"
+            style="@style/Continental.PlayerButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:padding="6dp"
+            android:src="@drawable/ic_play"
+            android:tint="@color/continental_gold"
+            android:visibility="gone"
+            android:contentDescription="@string/action_play" />
+
+        <ImageButton
+            android:id="@+id/btnRemove"
+            style="@style/Continental.PlayerButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:padding="6dp"
+            android:src="@drawable/ic_close"
+            android:tint="@color/continental_text_secondary"
+            android:visibility="gone"
+            android:contentDescription="@string/action_remove" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressDownload"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_marginTop="@dimen/spacing_s"
+        android:max="100"
+        android:progressTint="@color/continental_gold"
+        android:progressBackgroundTint="#33FFFFFF"
+        tools:progress="55" />
+
+    <TextView
+        android:id="@+id/tvStatus"
+        style="@style/Continental.Text.Caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xs"
+        tools:text="Downloading · 55% · ETA 1m 20s" />
+
+</LinearLayout>

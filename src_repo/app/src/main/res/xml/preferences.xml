@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="Playback">
+
+        <ListPreference
+            android:key="pref_orientation_mode"
+            android:title="Orientation"
+            android:summary="%s"
+            android:entries="@array/orientation_mode_entries"
+            android:entryValues="@array/orientation_mode_values"
+            android:defaultValue="AUTO_SENSOR" />
+
+        <ListPreference
+            android:key="pref_resize_mode"
+            android:title="Default aspect ratio"
+            android:summary="%s"
+            android:entries="@array/resize_mode_entries"
+            android:entryValues="@array/resize_mode_values"
+            android:defaultValue="FIT" />
+
+        <SwitchPreferenceCompat
+            android:key="pref_remember_speed"
+            android:title="Remember last playback speed"
+            android:summaryOn="The speed you leave a video at becomes the default for the next one"
+            android:summaryOff="Every video starts at 1.0x"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="pref_keep_screen_on"
+            android:title="Keep screen on while playing"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="pref_auto_resume"
+            android:title="Resume automatically"
+            android:summaryOn="Playback continues from where you left off — no prompt"
+            android:summaryOff="You'll be asked before resuming a video"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Gestures">
+
+        <SwitchPreferenceCompat
+            android:key="pref_gesture_brightness"
+            android:title="Brightness gesture"
+            android:summary="Swipe up/down on the right half of the screen"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="pref_gesture_volume"
+            android:title="Volume gesture"
+            android:summary="Swipe up/down on the left half of the screen"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="pref_gesture_seek"
+            android:title="Swipe to seek"
+            android:summary="Swipe left/right anywhere to scrub through the video"
+            android:defaultValue="true" />
+
+        <ListPreference
+            android:key="pref_double_tap_seek"
+            android:title="Double-tap seek amount"
+            android:summary="%s"
+            android:entries="@array/double_tap_seek_entries"
+            android:entryValues="@array/double_tap_seek_values"
+            android:defaultValue="10" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Subtitles &amp; Audio">
+
+        <SwitchPreferenceCompat
+            android:key="pref_subtitles_default_on"
+            android:title="Enable subtitles automatically"
+            android:summary="When a matching language track exists"
+            android:defaultValue="true" />
+
+        <EditTextPreference
+            android:key="pref_subtitle_lang"
+            android:title="Preferred subtitle language"
+            android:summary="ISO code, e.g. en, ml, hi — leave blank for no preference"
+            android:defaultValue="" />
+
+        <EditTextPreference
+            android:key="pref_audio_lang"
+            android:title="Preferred audio language"
+            android:summary="ISO code, e.g. en, ml, hi — leave blank for no preference"
+            android:defaultValue="" />
+
+        <SwitchPreferenceCompat
+            android:key="pref_bass_boost"
+            android:title="Bass boost"
+            android:defaultValue="false" />
+
+        <SeekBarPreference
+            android:key="pref_bass_boost_strength"
+            android:title="Bass boost strength"
+            android:max="100"
+            android:defaultValue="50"
+            app:showSeekBarValue="true"
+            android:dependency="pref_bass_boost" />
+
+        <SwitchPreferenceCompat
+            android:key="pref_virtualizer"
+            android:title="3D virtualizer"
+            android:summary="Widens the soundstage on headphones"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Library &amp; Display">
+
+        <SeekBarPreference
+            android:key="pref_grid_columns"
+            android:title="Library grid columns"
+            android:max="4"
+            android:defaultValue="2"
+            app:showSeekBarValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="pref_fullscreen_immersive"
+            android:title="Immersive full screen"
+            android:summary="Hides the status and navigation bars throughout the app"
+            android:defaultValue="true" />
+
+        <Preference
+            android:key="pref_manage_hidden_folders"
+            android:title="Manage hidden folders"
+            android:summary="Unhide folders you've removed from the library" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Downloads">
+
+        <ListPreference
+            android:key="pref_dl_location_mode"
+            android:title="Save downloads to"
+            android:summary="%s"
+            android:entries="@array/download_location_entries"
+            android:entryValues="@array/download_location_values"
+            android:defaultValue="MOVIES" />
+
+        <Preference
+            android:key="pref_dl_choose_folder"
+            android:title="Choose custom folder…"
+            android:summary="Only used when \&quot;Custom folder\&quot; is selected above" />
+
+        <EditTextPreference
+            android:key="pref_dl_subfolder"
+            android:title="Subfolder name"
+            android:defaultValue="The Continental" />
+
+        <ListPreference
+            android:key="pref_dl_quality"
+            android:title="Default download quality"
+            android:summary="%s"
+            android:entries="@array/download_quality_entries"
+            android:entryValues="@array/download_quality_values"
+            android:defaultValue="Q1080" />
+
+        <SwitchPreferenceCompat
+            android:key="pref_dl_wifi_only"
+            android:title="Wi-Fi only"
+            android:defaultValue="false" />
+
+        <SeekBarPreference
+            android:key="pref_dl_max_concurrent"
+            android:title="Max simultaneous downloads"
+            android:max="3"
+            android:defaultValue="2"
+            app:showSeekBarValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="pref_dl_use_aria2"
+            android:title="Use aria2c accelerator"
+            android:summary="Multi-connection downloads for faster speeds"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="pref_dl_embed_subs"
+            android:title="Embed subtitles when available"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

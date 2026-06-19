@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme: true-black Material3 dark -->
+    <style name="Theme.Continental" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/continental_gold</item>
+        <item name="colorOnPrimary">@color/continental_black</item>
+        <item name="colorSecondary">@color/continental_gold_dim</item>
+        <item name="colorSurface">@color/continental_black</item>
+        <item name="colorOnSurface">@color/continental_text_primary</item>
+        <item name="colorSurfaceVariant">@color/continental_surface_elevated</item>
+        <item name="colorOnSurfaceVariant">@color/continental_text_secondary</item>
+        <item name="colorError">@color/continental_error</item>
+        <item name="android:colorBackground">@color/continental_black</item>
+        <item name="android:windowBackground">@color/continental_black</item>
+        <item name="android:statusBarColor">@color/continental_black</item>
+        <item name="android:navigationBarColor">@color/continental_black</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
+        <item name="android:textColor">@color/continental_text_primary</item>
+        <item name="materialAlertDialogTheme">@style/Theme.Continental.Dialog</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="29">false</item>
+    </style>
+
+    <!-- Fullscreen, edge-to-edge variant for the playback screen -->
+    <style name="Theme.Continental.Player" parent="Theme.Continental">
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowBackground">@color/continental_black</item>
+    </style>
+
+    <style name="Theme.Continental.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorPrimary">@color/continental_gold</item>
+        <item name="colorSurface">@color/continental_surface_elevated</item>
+        <item name="colorOnSurface">@color/continental_text_primary</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Continental.Dialog.Button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Continental.Dialog.Button</item>
+    </style>
+
+    <style name="Continental.Dialog.Button" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/continental_gold</item>
+    </style>
+
+    <!-- Typography helpers -->
+    <style name="Continental.Text.Title">
+        <item name="android:textColor">@color/continental_text_primary</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:letterSpacing">0.02</item>
+    </style>
+
+    <style name="Continental.Text.Body">
+        <item name="android:textColor">@color/continental_text_secondary</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="Continental.Text.Caption">
+        <item name="android:textColor">@color/continental_text_secondary</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+    </style>
+
+    <!-- Player control buttons: borderless gold-on-transparent -->
+    <style name="Continental.PlayerButton" parent="Widget.AppCompat.ImageButton">
+        <item name="android:background">@drawable/ripple_circle</item>
+        <item name="android:tint">@color/continental_text_primary</item>
+        <item name="android:padding">12dp</item>
+    </style>
+    <style name="Continental.Text" parent="Continental.Text.Body" />
+    
+</resources>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="orientation_mode_entries">
+        <item>Auto-rotate (sensor)</item>
+        <item>Landscape (locked)</item>
+        <item>Portrait (locked)</item>
+        <item>Follow system setting</item>
+    </string-array>
+    <string-array name="orientation_mode_values">
+        <item>AUTO_SENSOR</item>
+        <item>LOCKED_LANDSCAPE</item>
+        <item>LOCKED_PORTRAIT</item>
+        <item>FOLLOW_SYSTEM</item>
+    </string-array>
+
+    <string-array name="resize_mode_entries">
+        <item>Fit (no cropping)</item>
+        <item>Stretch to fill</item>
+        <item>Crop / Zoom</item>
+    </string-array>
+    <string-array name="resize_mode_values">
+        <item>FIT</item>
+        <item>FILL</item>
+        <item>ZOOM</item>
+    </string-array>
+
+    <string-array name="double_tap_seek_entries">
+        <item>5 seconds</item>
+        <item>10 seconds</item>
+        <item>15 seconds</item>
+        <item>30 seconds</item>
+    </string-array>
+    <string-array name="double_tap_seek_values">
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>30</item>
+    </string-array>
+
+    <string-array name="download_quality_entries">
+        <item>4K (2160p)</item>
+        <item>Full HD (1080p)</item>
+        <item>HD (720p)</item>
+        <item>SD (480p)</item>
+        <item>Best available</item>
+        <item>Audio only (MP3)</item>
+    </string-array>
+    <string-array name="download_quality_values">
+        <item>Q2160</item>
+        <item>Q1080</item>
+        <item>Q720</item>
+        <item>Q480</item>
+        <item>BEST</item>
+        <item>AUDIO_ONLY</item>
+    </string-array>
+
+    <string-array name="download_location_entries">
+        <item>Movies folder (MediaStore)</item>
+        <item>Downloads folder (MediaStore)</item>
+        <item>Custom folder…</item>
+    </string-array>
+    <string-array name="download_location_values">
+        <item>MOVIES</item>
+        <item>DOWNLOADS</item>
+        <item>CUSTOM</item>
+    </string-array>
+</resources>
