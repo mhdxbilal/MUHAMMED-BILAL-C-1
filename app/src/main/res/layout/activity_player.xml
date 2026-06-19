@@ -28,6 +28,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <TextView
+            android:id="@+id/tvPerformanceDashboard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|top"
+            android:layout_margin="32dp"
+            android:background="#B3000000"
+            android:padding="@dimen/spacing_s"
+            android:textColor="@color/continental_text_primary"
+            android:textSize="11sp"
+            android:fontFamily="monospace"
+            android:visibility="gone" />
+
         <!-- Vertical Progress Bars for Gestures -->
         <ProgressBar
             android:id="@+id/pbVolume"

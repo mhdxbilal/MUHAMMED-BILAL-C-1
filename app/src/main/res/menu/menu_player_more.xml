@@ -6,5 +6,6 @@
     <item android:id="@+id/action_orientation"    android:title="@string/pref_orientation_title" />
     <item android:id="@+id/action_audio_effects"  android:title="@string/action_audio_effects" />
     <item android:id="@+id/action_equalizer"      android:title="Equalizer" />
+    <item android:id="@+id/action_performance"    android:title="Performance Stats" />
     <item android:id="@+id/action_pip"            android:title="@string/action_pip" />
 </menu>

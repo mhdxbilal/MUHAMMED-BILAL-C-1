@@ -320,6 +320,46 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
         }
     }
 
+    private var performanceOverlayEnabled = false
+    private var droppedFrames = 0
+    private var decoderName = ""
+    private var videoFormat = ""
+    private var audioFormat = ""
+    
+    private val analyticsListener = object : androidx.media3.exoplayer.analytics.AnalyticsListener {
+        override fun onDroppedVideoFrames(eventTime: androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime, droppedFrames: Int, elapsedMs: Long) {
+            this@PlayerActivity.droppedFrames += droppedFrames
+            updatePerformanceDashboard()
+        }
+        
+        override fun onVideoDecoderInitialized(eventTime: androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime, decoderName: String, initializedTimestampMs: Long, initializationDurationMs: Long) {
+            this@PlayerActivity.decoderName = decoderName
+            updatePerformanceDashboard()
+        }
+        
+        override fun onVideoInputFormatChanged(eventTime: androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime, format: androidx.media3.common.Format, decoderReuseEvaluation: androidx.media3.exoplayer.DecoderReuseEvaluation?) {
+            this@PlayerActivity.videoFormat = "${format.width}x${format.height} @ ${format.frameRate}fps ${format.sampleMimeType}"
+            updatePerformanceDashboard()
+        }
+        
+        override fun onAudioInputFormatChanged(eventTime: androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime, format: androidx.media3.common.Format, decoderReuseEvaluation: androidx.media3.exoplayer.DecoderReuseEvaluation?) {
+            this@PlayerActivity.audioFormat = "${format.sampleRate}Hz ${format.channelCount}ch ${format.sampleMimeType}"
+            updatePerformanceDashboard()
+        }
+    }
+
+    private fun updatePerformanceDashboard() {
+        if (!performanceOverlayEnabled) return
+        val statsText = "DECODER: $decoderName\nVIDEO: $videoFormat\nAUDIO: $audioFormat\nDROPPED: $droppedFrames frames"
+        binding.tvPerformanceDashboard.text = statsText
+    }
+
+    private fun togglePerformanceDashboard() {
+        performanceOverlayEnabled = !performanceOverlayEnabled
+        binding.tvPerformanceDashboard.isVisible = performanceOverlayEnabled
+        if (performanceOverlayEnabled) updatePerformanceDashboard()
+    }
+
     // ─────────────────────────────────────────────
     // Player setup
     // ─────────────────────────────────────────────
@@ -327,6 +367,10 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
     private fun setupPlayerView() {
         binding.playerView.player = player
         applyResizeModeFromSettings()
+        
+        if (player is androidx.media3.exoplayer.ExoPlayer) {
+            (player as androidx.media3.exoplayer.ExoPlayer).addAnalyticsListener(analyticsListener)
+        }
 
         player.addListener(object : Player.Listener {
             override fun onVideoSizeChanged(videoSize: androidx.media3.common.VideoSize) {
@@ -509,6 +553,16 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
             showSpeedPicker()
         }
 
+        // Fullscreen toggle button
+        pv.findViewById<android.widget.ImageButton>(R.id.btnFullscreenToggle)?.apply {
+            setImageResource(if (settings.fullscreenImmersive) R.drawable.ic_fullscreen_exit else R.drawable.ic_fullscreen)
+            setOnClickListener {
+                settings.fullscreenImmersive = !settings.fullscreenImmersive
+                setImageResource(if (settings.fullscreenImmersive) R.drawable.ic_fullscreen_exit else R.drawable.ic_fullscreen)
+                applyImmersiveMode()
+            }
+        }
+
         // Error overlay buttons
         binding.btnErrorRetry.setOnClickListener {
             binding.llErrorOverlay.isVisible = false
@@ -552,6 +606,7 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
                 R.id.action_orientation -> { showOrientationDialog(); true }
                 R.id.action_audio_effects -> { showAudioEffectsDialog(); true }
                 R.id.action_equalizer -> { showEqualizer(); true }
+                R.id.action_performance -> { togglePerformanceDashboard(); true }
                 R.id.action_pip -> { enterPip(); true }
                 else -> false
             }

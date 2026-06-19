@@ -228,6 +228,15 @@
                 android:fontFamily="sans-serif-condensed-medium"
                 android:text="1.0x"
                 android:contentDescription="@string/action_playback_speed" />
+
+            <ImageButton
+                android:id="@+id/btnFullscreenToggle"
+                style="@style/Continental.PlayerButton"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="@dimen/spacing_s"
+                android:src="@drawable/ic_fullscreen_exit"
+                android:contentDescription="Toggle Fullscreen" />
         </LinearLayout>
     </LinearLayout>
 
