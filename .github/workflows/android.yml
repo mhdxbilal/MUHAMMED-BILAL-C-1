@@ -29,6 +29,9 @@ jobs:
       # ── 3. Gradle wrapper permission ─────────────────────────────────
       - name: Make gradlew executable
         run: |
+          if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
+            gradle wrapper --gradle-version 8.7
+          fi
           sed -i 's/\r$//' gradlew
           chmod +x gradlew
 
