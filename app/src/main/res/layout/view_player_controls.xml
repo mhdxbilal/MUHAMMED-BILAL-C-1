@@ -141,52 +141,94 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@drawable/scrim_bottom"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
+        android:orientation="vertical"
         android:paddingTop="@dimen/spacing_l"
         android:paddingBottom="@dimen/spacing_s"
         android:paddingStart="@dimen/spacing_m"
         android:paddingEnd="@dimen/spacing_m">
 
-        <TextView
-            android:id="@+id/exo_position"
-            android:layout_width="wrap_content"
+        <!-- Volume Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/continental_text_primary"
-            android:textSize="12sp"
-            android:fontFamily="sans-serif-condensed" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="@dimen/spacing_s">
 
-        <androidx.appcompat.widget.AppCompatSeekBar
-            android:id="@+id/realtime_progress"
-            android:layout_width="0dp"
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_audio_track"
+                app:tint="@color/continental_text_secondary"
+                android:contentDescription="Volume" />
+
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/seekVolume"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/spacing_s"
+                android:layout_marginEnd="@dimen/spacing_s"
+                android:max="100"
+                android:progress="100"
+                android:progressTint="@color/continental_gold"
+                android:thumbTint="@color/continental_gold" />
+                
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_audio_track"
+                app:tint="@color/continental_gold"
+                android:contentDescription="Volume High" />
+        </LinearLayout>
+
+        <!-- Progress Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="@dimen/spacing_s"
-            android:layout_marginEnd="@dimen/spacing_s"
-            android:progressTint="@color/continental_gold"
-            android:thumbTint="@color/continental_gold" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/exo_duration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/continental_text_secondary"
-            android:textSize="12sp"
-            android:fontFamily="sans-serif-condensed" />
+            <TextView
+                android:id="@+id/exo_position"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/continental_text_primary"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-condensed" />
 
-        <TextView
-            android:id="@+id/btnSpeed"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:layout_marginStart="@dimen/spacing_s"
-            android:minWidth="44dp"
-            android:gravity="center"
-            android:background="@drawable/ripple_circle"
-            android:textColor="@color/continental_gold"
-            android:textSize="13sp"
-            android:fontFamily="sans-serif-condensed-medium"
-            android:text="1.0x"
-            android:contentDescription="@string/action_playback_speed" />
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/realtime_progress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/spacing_s"
+                android:layout_marginEnd="@dimen/spacing_s"
+                android:progressTint="@color/continental_gold"
+                android:thumbTint="@color/continental_gold" />
+
+            <TextView
+                android:id="@+id/exo_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/continental_text_secondary"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-condensed" />
+
+            <TextView
+                android:id="@+id/btnSpeed"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginStart="@dimen/spacing_s"
+                android:minWidth="44dp"
+                android:gravity="center"
+                android:background="@drawable/ripple_circle"
+                android:textColor="@color/continental_gold"
+                android:textSize="13sp"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:text="1.0x"
+                android:contentDescription="@string/action_playback_speed" />
+        </LinearLayout>
     </LinearLayout>
 
 </FrameLayout>

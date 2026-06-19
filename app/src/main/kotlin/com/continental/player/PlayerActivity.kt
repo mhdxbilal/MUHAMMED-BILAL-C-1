@@ -256,6 +256,7 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
         applyKeepScreenOn()
         setupPlayerView()
         setupSeekBar()
+        setupVolumeBar()
         wireControlButtons()
         setupGestureOverlay()
         setupPlaylistDrawer()
@@ -456,6 +457,22 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
                     gestureIndicatorHandler.post(progressUpdateRunnable)
                 }
             }
+        })
+    }
+
+    private fun setupVolumeBar() {
+        val volumeBar = binding.playerView.findViewById<android.widget.SeekBar>(R.id.seekVolume)
+        volumeBar?.max = 100
+        volumeBar?.progress = (player.volume * 100).toInt()
+
+        volumeBar?.setOnSeekBarChangeListener(object : android.widget.SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: android.widget.SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    player.volume = progress / 100f
+                }
+            }
+            override fun onStartTrackingTouch(seekBar: android.widget.SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: android.widget.SeekBar?) {}
         })
     }
 
