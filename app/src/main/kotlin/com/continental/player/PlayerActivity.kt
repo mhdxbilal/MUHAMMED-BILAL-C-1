@@ -65,6 +65,17 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
         }
     }
 
+    private val subtitlePickerLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) {
+            contentResolver.takePersistableUriPermission(
+                uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+            loadExternalSubtitle(uri)
+        }
+    }
+
     // Companion extras
     companion object {
         const val EXTRA_URI_LIST = "uri_list"
@@ -428,21 +439,59 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
                 pair != null && TrackSelectionHelper.isTrackSelected(groups[pair.first], pair.second)
             }.takeIf { it >= 0 } ?: 0
         }
+        val loadSubtitleIndex = labelItems.size
+        labelItems.add(getString(R.string.action_add_subtitle_file))
+        
         AlertDialog.Builder(this)
             .setTitle(R.string.action_subtitles)
             .setSingleChoiceItems(labelItems.toTypedArray(), selected) { _, which -> selected = which }
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                val pair = groupIndices[selected]
-                if (pair == null) {
-                    TrackSelectionHelper.disableTextTracks(player)
+                if (selected == loadSubtitleIndex) {
+                    subtitlePickerLauncher.launch(arrayOf("*/*"))
                 } else {
-                    TrackSelectionHelper.enableTextTracks(player)
-                    TrackSelectionHelper.selectTrack(player, groups[pair.first], pair.second)
+                    val pair = groupIndices[selected]
+                    if (pair == null) {
+                        TrackSelectionHelper.disableTextTracks(player)
+                    } else {
+                        TrackSelectionHelper.enableTextTracks(player)
+                        TrackSelectionHelper.selectTrack(player, groups[pair.first], pair.second)
+                    }
                 }
             }
             .setNegativeButton(R.string.action_cancel, null)
             .show()
             .applyGoldTheme()
+    }
+
+    private fun loadExternalSubtitle(uri: android.net.Uri) {
+        val currentItem = player.currentMediaItem ?: return
+        
+        val mimeType = when {
+            uri.path?.endsWith(".vtt", ignoreCase = true) == true -> androidx.media3.common.MimeTypes.TEXT_VTT
+            uri.path?.endsWith(".ass", ignoreCase = true) == true || uri.path?.endsWith(".ssa", ignoreCase = true) == true -> androidx.media3.common.MimeTypes.TEXT_SSA
+            else -> androidx.media3.common.MimeTypes.APPLICATION_SUBRIP
+        }
+
+        val subtitleConfig = androidx.media3.common.MediaItem.SubtitleConfiguration.Builder(uri)
+            .setMimeType(mimeType)
+            .setLanguage("en")
+            .setSelectionFlags(androidx.media3.common.C.SELECTION_FLAG_DEFAULT)
+            .setId(uri.toString())
+            .build()
+        
+        val existingConfigs = currentItem.localConfiguration?.subtitleConfigurations ?: emptyList()
+        val newConfigs = existingConfigs + subtitleConfig
+        
+        val newItem = currentItem.buildUpon()
+            .setSubtitleConfigurations(newConfigs)
+            .build()
+            
+        val currentPos = player.currentPosition
+        player.replaceMediaItem(player.currentMediaItemIndex, newItem)
+        TrackSelectionHelper.enableTextTracks(player)
+        // Automatically select the newly added track once it loads.
+        
+        android.widget.Toast.makeText(this, R.string.toast_added_subtitle, android.widget.Toast.LENGTH_SHORT).show()
     }
 
     // ─────────────────────────────────────────────
@@ -643,6 +692,24 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
     override fun getCurrentPositionMs(): Long = player.currentPosition
 
     override fun getDurationMs(): Long = player.duration.takeIf { it > 0 } ?: 0L
+
+    private var defaultPlaybackSpeed = 1f
+
+    override fun onLongPressStart() {
+        if (!player.isPlaying) return
+        defaultPlaybackSpeed = player.playbackParameters.speed
+        player.playbackParameters = androidx.media3.common.PlaybackParameters(2f)
+        binding.tvGestureIndicator.apply {
+            text = "2x Speed"
+            alpha = 1f
+            animate().cancel()
+        }
+    }
+
+    override fun onLongPressEnd() {
+        player.playbackParameters = androidx.media3.common.PlaybackParameters(defaultPlaybackSpeed)
+        gestureIndicatorHide.run()
+    }
 
     override fun onSingleTap() {
         if (controlsLocked) return
