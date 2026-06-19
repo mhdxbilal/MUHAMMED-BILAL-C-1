@@ -44,6 +44,7 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
     private var queue: ArrayList<String> = arrayListOf()   // list of URI strings
     private var queueIndex: Int = 0
     private var currentTitle: String = ""
+    private var mediaSession: androidx.media3.session.MediaSession? = null
 
     // UI state
     private var controlsLocked = false
@@ -195,9 +196,12 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
                 tv.setTextColor(if (position == queueIndex) getColor(R.color.continental_gold) else android.graphics.Color.WHITE)
                 
                 tv.setOnClickListener {
-                    queueIndex = position
-                    loadCurrentQueueItem()
-                    binding.drawerLayout.closeDrawer(androidx.core.view.GravityCompat.END)
+                    val actualPos = holder.bindingAdapterPosition
+                    if (actualPos != androidx.recyclerview.widget.RecyclerView.NO_POSITION) {
+                        queueIndex = actualPos
+                        loadCurrentQueueItem()
+                        binding.drawerLayout.closeDrawer(androidx.core.view.GravityCompat.END)
+                    }
                 }
             }
 
@@ -245,6 +249,7 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
 
         resumeStore = ResumeStore.getInstance(this)
         audioEffects = AudioEffectsManager(settings)
+        mediaSession = androidx.media3.session.MediaSession.Builder(this, player).build()
 
         applyOrientationFromSettings()
         applyKeepScreenOn()
@@ -287,6 +292,7 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
 
     override fun onDestroy() {
         persistResumePosition()
+        mediaSession?.release()
         audioEffects.release()
         player.release()
         super.onDestroy()
@@ -321,6 +327,11 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
         applyResizeModeFromSettings()
 
         player.addListener(object : Player.Listener {
+            override fun onVideoSizeChanged(videoSize: androidx.media3.common.VideoSize) {
+                if (settings.resizeMode == ResizeMode.AUTO_FIT) {
+                    updateAutoFitScale()
+                }
+            }
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_READY) {
                     val sessionId = player.audioSessionId
@@ -362,8 +373,14 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
         if (queue.isEmpty()) { finish(); return }
 
         val mediaItems = queue.map { uriString ->
+            val uri = Uri.parse(uriString)
+            val name = (if (uriString == queue[queueIndex] && currentTitle.isNotEmpty()) currentTitle else uri.lastPathSegment) ?: "Video"
+            val metadata = androidx.media3.common.MediaMetadata.Builder()
+                .setTitle(name)
+                .build()
             MediaItem.Builder()
-                .setUri(Uri.parse(uriString))
+                .setUri(uri)
+                .setMediaMetadata(metadata)
                 .build()
         }
         player.setMediaItems(mediaItems, queueIndex, 0L)
@@ -669,31 +686,56 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
     // ─────────────────────────────────────────────
 
     private fun cycleResizeMode() {
-        val next = when (binding.playerView.resizeMode) {
-            AspectRatioFrameLayout.RESIZE_MODE_FIT -> AspectRatioFrameLayout.RESIZE_MODE_FILL
-            AspectRatioFrameLayout.RESIZE_MODE_FILL -> AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-            else -> AspectRatioFrameLayout.RESIZE_MODE_FIT
+        val nextMode = when (settings.resizeMode) {
+            ResizeMode.FIT -> ResizeMode.FILL
+            ResizeMode.FILL -> ResizeMode.ZOOM
+            ResizeMode.ZOOM -> ResizeMode.AUTO_FIT
+            ResizeMode.AUTO_FIT -> ResizeMode.FIT
         }
-        binding.playerView.resizeMode = next
-        val mode = when (next) {
-            AspectRatioFrameLayout.RESIZE_MODE_FILL -> ResizeMode.FILL
-            AspectRatioFrameLayout.RESIZE_MODE_ZOOM -> ResizeMode.ZOOM
-            else -> ResizeMode.FIT
-        }
-        settings.resizeMode = mode
-        val label = when (mode) {
+        settings.resizeMode = nextMode
+        applyResizeModeFromSettings()
+        
+        val label = when (nextMode) {
             ResizeMode.FILL -> getString(R.string.resize_fill)
             ResizeMode.ZOOM -> getString(R.string.resize_zoom)
-            else -> getString(R.string.resize_fit)
+            ResizeMode.AUTO_FIT -> "Auto-Fit"
+            ResizeMode.FIT -> getString(R.string.resize_fit)
         }
         showGestureIndicator("⬛ $label")
     }
 
     private fun applyResizeModeFromSettings() {
-        binding.playerView.resizeMode = when (settings.resizeMode) {
-            ResizeMode.FILL -> AspectRatioFrameLayout.RESIZE_MODE_FILL
-            ResizeMode.ZOOM -> AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-            else -> AspectRatioFrameLayout.RESIZE_MODE_FIT
+        when (settings.resizeMode) {
+            ResizeMode.FILL -> binding.playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
+            ResizeMode.ZOOM -> binding.playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+            ResizeMode.FIT -> binding.playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
+            ResizeMode.AUTO_FIT -> updateAutoFitScale()
+        }
+    }
+
+    private fun updateAutoFitScale() {
+        if (settings.resizeMode != ResizeMode.AUTO_FIT) return
+        val videoFormat = player.videoFormat ?: return
+        val videoWidth = videoFormat.width
+        val videoHeight = videoFormat.height
+        if (videoWidth <= 0 || videoHeight <= 0) {
+             binding.playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
+             return
+        }
+        val videoRatio = videoWidth.toFloat() / videoHeight.toFloat()
+        val screenWidth = binding.playerView.width
+        val screenHeight = binding.playerView.height
+        if (screenWidth <= 0 || screenHeight <= 0) {
+             binding.playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
+             return
+        }
+        val screenRatio = screenWidth.toFloat() / screenHeight.toFloat()
+        
+        val diff = Math.abs(videoRatio / screenRatio - 1f)
+        if (diff < 0.2f) {
+             binding.playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+        } else {
+             binding.playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
         }
     }
 
