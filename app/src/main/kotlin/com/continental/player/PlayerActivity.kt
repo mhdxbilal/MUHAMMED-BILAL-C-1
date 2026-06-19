@@ -107,7 +107,9 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
 
     private fun setupEqualizerOverlay() {
         binding.btnCloseEqualizer.setOnClickListener {
-            binding.equalizerContainer.isVisible = false
+            binding.equalizerContainer.animate().alpha(0f).setDuration(300).withEndAction {
+                binding.equalizerContainer.isVisible = false
+            }.start()
         }
     }
     
@@ -170,7 +172,11 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
             binding.equalizerBands.addView(layout)
         }
         
-        binding.equalizerContainer.isVisible = true
+        binding.equalizerContainer.apply {
+            alpha = 0f
+            isVisible = true
+            animate().alpha(1f).setDuration(300).setListener(null).start()
+        }
     }
     
     private fun setupPlaylistDrawer() {
@@ -350,14 +356,46 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
 
     private fun updatePerformanceDashboard() {
         if (!performanceOverlayEnabled) return
-        val statsText = "DECODER: $decoderName\nVIDEO: $videoFormat\nAUDIO: $audioFormat\nDROPPED: $droppedFrames frames"
+        val runtime = Runtime.getRuntime()
+        val usedMemInMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L
+        val maxHeapSizeInMB = runtime.maxMemory() / 1048576L
+        val memoryStats = "MEM: ${usedMemInMB}MB / ${maxHeapSizeInMB}MB"
+        val statsText = "DECODER: $decoderName\nVIDEO: $videoFormat\nAUDIO: $audioFormat\nDROPPED: $droppedFrames frames\n$memoryStats"
         binding.tvPerformanceDashboard.text = statsText
+    }
+
+    private val performanceUpdateRunnable = object : Runnable {
+        override fun run() {
+            updatePerformanceDashboard()
+            if (performanceOverlayEnabled) {
+                gestureIndicatorHandler.postDelayed(this, 1000)
+            }
+        }
     }
 
     private fun togglePerformanceDashboard() {
         performanceOverlayEnabled = !performanceOverlayEnabled
-        binding.tvPerformanceDashboard.isVisible = performanceOverlayEnabled
-        if (performanceOverlayEnabled) updatePerformanceDashboard()
+        if (performanceOverlayEnabled) {
+            gestureIndicatorHandler.post(performanceUpdateRunnable)
+            binding.tvPerformanceDashboard.apply {
+                alpha = 0f
+                isVisible = true
+                animate()
+                    .alpha(1f)
+                    .setDuration(300)
+                    .setListener(null)
+                    .start()
+            }
+        } else {
+            gestureIndicatorHandler.removeCallbacks(performanceUpdateRunnable)
+            binding.tvPerformanceDashboard.animate()
+                .alpha(0f)
+                .setDuration(300)
+                .withEndAction {
+                    binding.tvPerformanceDashboard.isVisible = false
+                }
+                .start()
+        }
     }
 
     // ─────────────────────────────────────────────
@@ -565,12 +603,12 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
 
         // Error overlay buttons
         binding.btnErrorRetry.setOnClickListener {
-            binding.llErrorOverlay.isVisible = false
+            binding.llErrorOverlay.animate().alpha(0f).setDuration(300).withEndAction { binding.llErrorOverlay.isVisible = false }.start()
             player.prepare()
             player.play()
         }
         binding.btnErrorSkip.setOnClickListener {
-            binding.llErrorOverlay.isVisible = false
+            binding.llErrorOverlay.animate().alpha(0f).setDuration(300).withEndAction { binding.llErrorOverlay.isVisible = false }.start()
             if (queueIndex < queue.size - 1) {
                 queueIndex++
                 player.seekToNextMediaItem()
@@ -908,7 +946,11 @@ class PlayerActivity : BaseActivity(), PlayerGestureHelper.Listener {
     // ─────────────────────────────────────────────
 
     private fun showErrorOverlay(error: PlaybackException) {
-        binding.llErrorOverlay.isVisible = true
+        binding.llErrorOverlay.apply {
+            alpha = 0f
+            isVisible = true
+            animate().alpha(1f).setDuration(300).setListener(null).start()
+        }
         val isFormat = error.errorCode == PlaybackException.ERROR_CODE_DECODER_INIT_FAILED ||
             error.errorCode == PlaybackException.ERROR_CODE_DECODING_FAILED ||
             error.errorCode == PlaybackException.ERROR_CODE_AUDIO_TRACK_INIT_FAILED

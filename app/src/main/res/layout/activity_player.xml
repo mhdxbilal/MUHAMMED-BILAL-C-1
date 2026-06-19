@@ -21,6 +21,7 @@
             app:show_buffering="when_playing"
             app:surface_type="surface_view"
             app:use_controller="true"
+            app:animation_enabled="true"
             app:resize_mode="fit" />
 
         <View
